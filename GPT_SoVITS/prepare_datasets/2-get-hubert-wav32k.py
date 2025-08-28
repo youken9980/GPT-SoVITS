@@ -10,6 +10,7 @@ i_part = os.environ.get("i_part")
 all_parts = os.environ.get("all_parts")
 if "_CUDA_VISIBLE_DEVICES" in os.environ:
     os.environ["CUDA_VISIBLE_DEVICES"] = os.environ["_CUDA_VISIBLE_DEVICES"]
+os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1' # 当遇到mps不支持的步骤时使用cpu
 from feature_extractor import cnhubert
 
 opt_dir = os.environ.get("opt_dir")
@@ -61,8 +62,8 @@ maxx = 0.95
 alpha = 0.5
 if torch.cuda.is_available():
     device = "cuda:0"
-# elif torch.backends.mps.is_available():
-#     device = "mps"
+elif torch.backends.mps.is_available():
+    device = "mps"
 else:
     device = "cpu"
 model = cnhubert.get_model()

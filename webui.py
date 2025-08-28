@@ -89,7 +89,7 @@ from tools.my_utils import check_details, check_for_existance
 os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-# os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1' # 当遇到mps不支持的步骤时使用cpu
+os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1' # 当遇到mps不支持的步骤时使用cpu
 import gradio as gr
 
 n_cpu = cpu_count()

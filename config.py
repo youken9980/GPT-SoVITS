@@ -148,9 +148,13 @@ api_port = 9880
 # Thanks to the contribution of @Karasukaigan and @XXXXRT666
 def get_device_dtype_sm(idx: int) -> tuple[torch.device, torch.dtype, float, float]:
     cpu = torch.device("cpu")
+    mps = torch.device("mps")
     cuda = torch.device(f"cuda:{idx}")
     if not torch.cuda.is_available():
-        return cpu, torch.float32, 0.0, 0.0
+        if torch.backends.mps.is_available():
+            return mps, torch.float32, 0.0, 0.0
+        else:
+            return cpu, torch.float32, 0.0, 0.0
     device_idx = idx
     capability = torch.cuda.get_device_capability(device_idx)
     name = torch.cuda.get_device_name(device_idx)
@@ -183,7 +187,10 @@ for j in tmp:
     device = j[0]
     memset.add(j[3])
     if device.type != "cpu":
-        GPU_INFOS.append(f"{device.index}\t{torch.cuda.get_device_name(device.index)}")
+        if device.type == "mps":
+            GPU_INFOS.append(f"{device.index}\tmps")
+        else :
+            GPU_INFOS.append(f"{device.index}\t{torch.cuda.get_device_name(device.index)}")
         GPU_INDEX.add(device.index)
 
 if not GPU_INFOS:

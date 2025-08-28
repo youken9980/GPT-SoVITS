@@ -7,6 +7,7 @@ import utils
 
 hps = utils.get_hparams(stage=2)
 os.environ["CUDA_VISIBLE_DEVICES"] = hps.train.gpu_numbers.replace("-", ",")
+os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1' # 当遇到mps不支持的步骤时使用cpu
 import logging
 
 import torch
@@ -48,6 +49,8 @@ torch.set_float32_matmul_precision("medium")  # 最低精度但最快（也就�
 global_step = 0
 
 device = "cpu"  # cuda以外的设备，等mps优化后加入
+if torch.backends.mps.is_available():
+    device = "mps"
 
 
 def main():

@@ -3,6 +3,7 @@ import os
 
 if "_CUDA_VISIBLE_DEVICES" in os.environ:
     os.environ["CUDA_VISIBLE_DEVICES"] = os.environ["_CUDA_VISIBLE_DEVICES"]
+os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1' # 当遇到mps不支持的步骤时使用cpu
 import argparse
 import logging
 import platform
@@ -110,7 +111,7 @@ def main(args):
     os.environ["USE_LIBUV"] = "0"
     trainer: Trainer = Trainer(
         max_epochs=config["train"]["epochs"],
-        accelerator="gpu" if torch.cuda.is_available() else "cpu",
+        accelerator="gpu" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu",
         # val_check_interval=9999999999999999999999,###不要验证
         # check_val_every_n_epoch=None,
         limit_val_batches=0,

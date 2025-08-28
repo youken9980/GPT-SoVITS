@@ -6,6 +6,7 @@ i_part = os.environ.get("i_part")
 all_parts = os.environ.get("all_parts")
 if "_CUDA_VISIBLE_DEVICES" in os.environ:
     os.environ["CUDA_VISIBLE_DEVICES"] = os.environ["_CUDA_VISIBLE_DEVICES"]
+os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1' # 当遇到mps不支持的步骤时使用cpu
 opt_dir = os.environ.get("opt_dir")
 pretrained_s2G = os.environ.get("pretrained_s2G")
 s2config_path = os.environ.get("s2config_path")
@@ -61,8 +62,8 @@ if os.path.exists(semantic_path) == False:
 
     if torch.cuda.is_available():
         device = "cuda"
-    # elif torch.backends.mps.is_available():
-    #     device = "mps"
+    elif torch.backends.mps.is_available():
+        device = "mps"
     else:
         device = "cpu"
     hps = utils.get_hparams_from_file(s2config_path)
